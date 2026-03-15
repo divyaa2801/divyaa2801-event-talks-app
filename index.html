@@ -3,20 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech Talks 2026</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Tech Talks Today</title>
+    <style>
+        body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background: #333;
+    color: #fff;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+.search-container {
+    padding: 1rem 0;
+}
+
+#searchInput {
+    width: 80%;
+    max-width: 400px;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#schedule-container {
+    width: 90%;
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+.schedule-item {
+    background: #fff;
+    margin-bottom: 1rem;
+    padding: 1.5rem;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    border-left: 5px solid #333;
+}
+
+.schedule-item.break {
+    border-left-color: #f0ad4e;
+}
+
+.time {
+    width: 100px;
+    font-weight: bold;
+    color: #333;
+}
+
+.details {
+    flex: 1;
+}
+
+.details h2 {
+    margin-top: 0;
+}
+
+.speakers {
+    font-style: italic;
+    color: #555;
+}
+
+.categories {
+    margin-top: 0.5rem;
+}
+
+.categories span {
+    background: #eee;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+}
+
+.description {
+    margin-top: 1rem;
+}
+
+.no-results {
+    text-align: center;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 5px;
+}
+
+footer {
+    text-align: center;
+    padding: 1rem 0;
+    margin-top: 2rem;
+    background: #333;
+    color: #fff;
+}
+    </style>
 </head>
 <body>
     <header>
-        <h1>Tech Talks 2026</h1>
+        <h1>Tech Talks Today</h1>
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="Search by category...">
         </div>
     </header>
-    <main id="scheduleContainer">
-        <!-- Schedule will be dynamically generated here -->
+    <main id="schedule-container">
+        <!-- Schedule will be generated here -->
     </main>
-    <script src="data.js"></script>
-    <script src="script.js"></script>
+    <footer>
+        <p>&copy; 2026 Tech Talks Today</p>
+    </footer>
+    <script>
+        
+document.addEventListener('DOMContentLoaded', () => {
+    const scheduleContainer = document.getElementById('schedule-container');
+    const searchInput = document.getElementById('searchInput');
+    const talksData = [
+  {
+    "title": "The Future of JavaScript Frameworks",
+    "speakers": ["Jane Doe"],
+    "categories": ["JavaScript", "Web Development", "Frontend"],
+    "duration": 60,
+    "description": "A deep dive into the latest trends and the future of JavaScript frameworks. We'll explore the pros and cons of the most popular frameworks and what to expect in the coming years."
+  },
+  {
+    "title": "Building Scalable APIs with Node.js",
+    "speakers": ["John Smith"],
+    "categories": ["Node.js", "Backend", "API"],
+    "duration": 60,
+    "description": "Learn how to build robust and scalable APIs using Node.js and Express. This talk will cover best practices, authentication, and performance optimization."
+  },
+  {
+    "title": "Mastering CSS Grid and Flexbox",
+    "speakers": ["Emily White", "David Green"],
+    "categories": ["CSS", "Web Design", "Frontend"],
+    "duration": 60,
+    "description": "A practical guide to mastering modern CSS layouts with Grid and Flexbox. Say goodbye to floats and positioning hacks!"
+  },
+  {
+    "title": "Introduction to Machine Learning with Python",
+    "speakers": ["Michael Brown"],
+    "categories": ["Python", "Machine Learning", "Data Science"],
+    "duration": 60,
+    "description": "Get started with Machine Learning in Python. This talk will cover the basics of ML, popular libraries like Scikit-learn, and a simple hands-on example."
+  },
+  {
+    "title": "The Power of Serverless Architectures",
+    "speakers": ["Sarah Jones"],
+    "categories": ["Serverless", "Cloud", "Architecture"],
+    "duration": 60,
+    "description": "Discover the benefits of serverless architectures and how to build event-driven applications in the cloud. We'll look at AWS Lambda, Azure Functions, and Google Cloud Functions."
+  },
+  {
+    "title": "DevOps for Dummies",
+    "speakers": ["Chris Wilson"],
+    "categories": ["DevOps", "CI/CD", "Automation"],
+    "duration": 60,
+    "description": "An introduction to the world of DevOps. Learn about continuous integration, continuous delivery, and how to automate your development workflow."
+  }
+];
+
+    renderSchedule(talksData);
+
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filteredTalks = talksData.filter(talk =>
+            talk.categories.some(category =>
+                category.toLowerCase().includes(searchTerm)
+            )
+        );
+        renderSchedule(filteredTalks, searchTerm);
+    });
+
+    function renderSchedule(talks, searchTerm = '') {
+        scheduleContainer.innerHTML = '';
+        let currentTime = new Date('2026-03-15T10:00:00');
+        const transitionTime = 10;
+        const lunchBreakDuration = 60;
+
+        const formatTime = (date) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        let talksDisplayed = 0;
+
+        if (searchTerm) {
+             talks.forEach(talk => {
+                const talkStartTime = new Date(currentTime);
+                const talkEndTime = new Date(talkStartTime.getTime() + talk.duration * 60000);
+                 displayTalk(talk, talkStartTime, talkEndTime);
+                 currentTime = new Date(talkEndTime.getTime() + transitionTime * 60000);
+             });
+        } else {
+            talks.forEach((talk, index) => {
+                const talkStartTime = new Date(currentTime);
+                const talkEndTime = new Date(talkStartTime.getTime() + talk.duration * 60000);
+
+                displayTalk(talk, talkStartTime, talkEndTime);
+                talksDisplayed++;
+                currentTime = new Date(talkEndTime.getTime() + transitionTime * 60000);
+
+                if (index === 2) { // Lunch break after the 3rd talk
+                    const lunchStartTime = new Date(currentTime);
+                    const lunchEndTime = new Date(lunchStartTime.getTime() + lunchBreakDuration * 60000);
+                    displayBreak('Lunch Break', lunchStartTime, lunchEndTime);
+                    currentTime = new Date(lunchEndTime.getTime());
+                }
+            });
+        }
+
+
+        if (talks.length === 0 && searchTerm) {
+            scheduleContainer.innerHTML = '<div class="no-results">No talks found for your search.</div>';
+        }
+
+        function displayTalk(talk, startTime, endTime) {
+            const scheduleItem = document.createElement('div');
+            scheduleItem.className = 'schedule-item';
+            scheduleItem.innerHTML = \`
+                <div class="time">\${formatTime(startTime)} - \${formatTime(endTime)}</div>
+                <div class="details">
+                    <h2>\${talk.title}</h2>
+                    <p class="speakers">\${talk.speakers.join(', ')}</p>
+                    <div class="categories">
+                        \${talk.categories.map(cat => \`<span>\${cat}</span>\`).join('')}
+                    </div>
+                    <p class="description">\${talk.description}</p>
+                </div>
+            \`;
+            scheduleContainer.appendChild(scheduleItem);
+        }
+
+        function displayBreak(title, startTime, endTime) {
+            const scheduleItem = document.createElement('div');
+            scheduleItem.className = 'schedule-item break';
+            scheduleItem.innerHTML = \`
+                <div class="time">\${formatTime(startTime)} - \${formatTime(endTime)}</div>
+                <div class="details">
+                    <h2>\${title}</h2>
+                </div>
+            \`;
+            scheduleContainer.appendChild(scheduleItem);
+        }
+    }
+});
+
+    </script>
 </body>
 </html>
